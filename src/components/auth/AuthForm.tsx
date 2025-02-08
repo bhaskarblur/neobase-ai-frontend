@@ -1,6 +1,6 @@
+import { AlertCircle, Boxes, KeyRound, Mail } from 'lucide-react';
 import React, { useState } from 'react';
 import { LoginFormData, SignupFormData } from '../../types/auth';
-import { KeyRound, Mail, UserPlus, LogIn, Boxes, AlertCircle } from 'lucide-react';
 
 interface AuthFormProps {
   onLogin: (data: LoginFormData) => void;
@@ -8,7 +8,7 @@ interface AuthFormProps {
 }
 
 interface FormErrors {
-  email?: string;
+  userName?: string;
   password?: string;
   confirmPassword?: string;
 }
@@ -18,16 +18,14 @@ export default function AuthForm({ onLogin, onSignup }: AuthFormProps) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [formData, setFormData] = useState<SignupFormData>({
-    email: '',
+    userName: '',
     password: '',
-    confirmPassword: '',
+    confirmPassword: ''
   });
 
-  const validateEmail = (email: string) => {
-    if (!email) return 'Email is required';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return 'Please enter a valid email address';
-    }
+  const validateUserName = (userName: string) => {
+    if (!userName) return 'Username is required';
+    if (userName.length < 3) return 'Username must be at least 3 characters';
     return '';
   };
 
@@ -41,9 +39,9 @@ export default function AuthForm({ onLogin, onSignup }: AuthFormProps) {
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
-    
-    const emailError = validateEmail(formData.email);
-    if (emailError) newErrors.email = emailError;
+
+    const userNameError = validateUserName(formData.userName);
+    if (userNameError) newErrors.userName = userNameError;
 
     const passwordError = validatePassword(formData.password);
     if (passwordError) newErrors.password = passwordError;
@@ -63,8 +61,8 @@ export default function AuthForm({ onLogin, onSignup }: AuthFormProps) {
     if (!validateForm()) return;
 
     if (isLogin) {
-      const { email, password } = formData;
-      onLogin({ email, password });
+      const { userName, password } = formData;
+      onLogin({ userName, password });
     } else {
       onSignup(formData);
     }
@@ -78,9 +76,9 @@ export default function AuthForm({ onLogin, onSignup }: AuthFormProps) {
     }));
 
     if (touched[name]) {
-      if (name === 'email') {
-        const error = validateEmail(value);
-        setErrors(prev => ({ ...prev, email: error }));
+      if (name === 'userName') {
+        const error = validateUserName(value);
+        setErrors(prev => ({ ...prev, userName: error }));
       } else if (name === 'password') {
         const error = validatePassword(value);
         setErrors(prev => ({ ...prev, password: error }));
@@ -97,9 +95,9 @@ export default function AuthForm({ onLogin, onSignup }: AuthFormProps) {
     const { name, value } = e.target;
     setTouched(prev => ({ ...prev, [name]: true }));
 
-    if (name === 'email') {
-      const error = validateEmail(value);
-      setErrors(prev => ({ ...prev, email: error }));
+    if (name === 'userName') {
+      const error = validateUserName(value);
+      setErrors(prev => ({ ...prev, userName: error }));
     } else if (name === 'password') {
       const error = validatePassword(value);
       setErrors(prev => ({ ...prev, password: error }));
@@ -119,7 +117,7 @@ export default function AuthForm({ onLogin, onSignup }: AuthFormProps) {
           NeoBase
         </h1>
         <p className="text-gray-600 text-center mb-8">
-          {isLogin ? 'Welcome back!' : 'Create your account'}
+          {isLogin ? 'Welcome back to the NeoBase!' : 'Create your account to start using NeoBase'}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -127,22 +125,21 @@ export default function AuthForm({ onLogin, onSignup }: AuthFormProps) {
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
               <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
+                type="text"
+                name="userName"
+                placeholder="Username"
+                value={formData.userName}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={`neo-input pl-12 w-full ${
-                  errors.email && touched.email ? 'border-neo-error' : ''
-                }`}
+                className={`neo-input pl-12 w-full ${errors.userName && touched.userName ? 'border-neo-error' : ''
+                  }`}
                 required
               />
             </div>
-            {errors.email && touched.email && (
+            {errors.userName && touched.userName && (
               <div className="flex items-center gap-1 mt-1 text-neo-error text-sm">
                 <AlertCircle className="w-4 h-4" />
-                <span>{errors.email}</span>
+                <span>{errors.userName}</span>
               </div>
             )}
           </div>
@@ -157,9 +154,8 @@ export default function AuthForm({ onLogin, onSignup }: AuthFormProps) {
                 value={formData.password}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={`neo-input pl-12 w-full ${
-                  errors.password && touched.password ? 'border-neo-error' : ''
-                }`}
+                className={`neo-input pl-12 w-full ${errors.password && touched.password ? 'border-neo-error' : ''
+                  }`}
                 required
               />
             </div>
@@ -182,9 +178,8 @@ export default function AuthForm({ onLogin, onSignup }: AuthFormProps) {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={`neo-input pl-12 w-full ${
-                    errors.confirmPassword && touched.confirmPassword ? 'border-neo-error' : ''
-                  }`}
+                  className={`neo-input pl-12 w-full ${errors.confirmPassword && touched.confirmPassword ? 'border-neo-error' : ''
+                    }`}
                   required
                 />
               </div>
